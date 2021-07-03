@@ -89,5 +89,5 @@ func main() {
     http.ServeFile(w, r, path.Join("./static", r.URL.Path))
   })
 
-  http.ListenAndServe(":8080", nil)
+  http.ListenAndServe(":80", nil)
 }
