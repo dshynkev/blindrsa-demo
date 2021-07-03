@@ -1,0 +1,23 @@
+body {
+  line-height: 1.4;
+  font-size: 2em;
+  max-width: 75%;
+  margin: 5% 12.5% 5% 12.5%;
+}
+
+button {
+  font-size: 1em;
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.display {
+  font-family: monospace;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Encryption playground</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="script.js"></script>
+  </head>
+  <body>
+    <h1>Anonymous survey registration</h1>
+    <div class="container">
+      <section id="sec-preamble">
+        <span class="paragraphed">
+          <p>This page will guide you through signing up for
+          the CS'22 Class Profile survey in a secure manner.</p>
+
+          <p>Specifically, your survey response will be unlinkable
+          to your identity. This is in spite of our use
+          of your Office365 OAuth details, which expose said identity,
+          to confirm your membership in the CS'22 cohort.</p>
+
+          <p>As we go, we will explain how this is achieved.</p>
+        </span>
+      </section>
+      <section id="sec-token">
+        <h2>Step 1: Generate a Respondent Token</h2>
+        <span class="paragraphed">
+          <p>When you submit your response, you will identify yourself
+          using a unique number: your <strong>Respondent Token</strong>.</p>
+
+          <p>This token is generated within your browser
+          and will not be sent to our server at any
+          point during this process.</p>
+        </span>
+        <button onclick="generateToken()">Generate</button>
+        <table>
+          <tr>
+            <td>Respondent Token</td>
+            <td class="display" id="token"></td>
+          </tr>
+        </table>
+      </section>
+      <section id="sec-public-key">
+        <h2>Step 2: Fetch the Public Key</h2>
+        <span class="paragraphed">
+          <p>How will we know that you have passed this verification?
+          You will present your token together with an
+          <strong>RSA signature</strong> for it that is
+          valid under <a href="/public.pem">this public key</a>.
+          We own the matching private key, so we trust it.</p>
+
+          <p>Before we continue, let us import the public
+          key material into this page's context for the math that follows.</p>
+        </span>
+        <button onclick="fetchPublicKey()">Fetch public key</button>
+        <table>
+          <tr>
+            <td>Modulus (<em>N</em>)</td>
+            <td class="display" id="modulus"></td>
+          </tr>
+          <tr>
+            <td>Public exponent (<em>e</em>)</td>
+            <td class="display" id="public-exponent"></td>
+          </tr>
+        </table>
+      </section>
+      <section id="sec-pre-sign">
+        <h2>Step 3: Blind the Token for Signing</h2>
+        <span class="paragraphed">
+          <p>This is where the magic happens.
+          We can't sign your token directly,
+          else you will lose the privacy we promised to you upfront.
+          We instead sign it <em>blindly</em>, using a technique you can
+          learn from <a href="https://en.wikipedia.org/wiki/Blind_signature#Blind_RSA_signatures">this article</a>.</p>
+
+          <p>In particular, as suggested there,
+          we actually blindly sign the <em>hash</em> of your ID
+          to ensure that additional (token, signature) pairs cannot be forged.</p>
+        </span>
+        <button onclick="hashAndBlind()">Blind the token</button>
+        <table>
+          <tr>
+            <td>Token hash (<em>m = SHA512(token)</em>)</td>
+            <td class="display" id="token-hash"></td>
+          </tr>
+          <tr>
+            <td>Blinding offset (random <em>r</em> in [<em>0, N-1</em>])</td>
+            <td class="display" id="blinding-offset"></td>
+          </tr>
+          <tr>
+            <td>Blinded hash (<em>m · r<sup>e</sup> mod N</em>)</td>
+            <td class="display" id="blinded-message"></td>
+          </tr>
+        </table>
+      </section>
+      <section id="sec-post-sign">
+        <h2>Step 4: Sign and Unblind</h2>
+        <span class="paragraphed">
+          <p>Finally, we send the blinded message
+          to our server for the signing and unblind the signature
+          after receiving it.</p>
+
+          <p>If everything went correctly,
+          you will see a checkmark and an invitation
+          to download your token and signature for
+          authenticating your survey response later.
+          Although they are saved in your browser's
+          <tt>localStorage</tt>, take care not to lose them:
+          we cannot sign another token for you due to the very unlinkability
+          of blind signatures.</p>
+        </span>
+        <button onclick="signAndUnblind()">Sign</button>
+        <table>
+          <tr>
+            <td>Blind signature (<em>s · r</em>)</td>
+            <td class="display" id="blind-signature"></td>
+          </tr>
+          <tr>
+            <td>True signature (<em>s</em>)</td>
+            <td class="display" id="signature"></td>
+          </tr>
+        </table>
+        <span id="verified"></span>
+        <button id="saveButton" onclick="saveCredentials()">Save</button>
+      </section>
+    </div>
+  </body>
+</html>
