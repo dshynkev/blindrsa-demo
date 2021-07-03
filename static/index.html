@@ -17,7 +17,7 @@
           <p>Specifically, your survey response will be unlinkable
           to your identity. This is in spite of our use
           of your Office365 OAuth details, which expose said identity,
-          to confirm your membership in the CS'22 cohort.</p>
+          to verify your membership in the CS'22 cohort.</p>
 
           <p>As we go, we will explain how this is achieved.</p>
         </span>
@@ -35,7 +35,7 @@
         <button onclick="generateToken()">Generate</button>
         <table>
           <tr>
-            <td>Respondent Token</td>
+            <td>Token</td>
             <td class="display" id="token"></td>
           </tr>
         </table>
@@ -75,7 +75,8 @@
 
           <p>In particular, as suggested there,
           we actually blindly sign the <em>hash</em> of your ID
-          to ensure that additional (token, signature) pairs cannot be forged.</p>
+          to ensure that additional (token, signature) pairs cannot be forged.
+          Only the blinded hash is seen by us during the verification.</p>
         </span>
         <button onclick="hashAndBlind()">Blind the token</button>
         <table>
@@ -96,7 +97,7 @@
       <section id="sec-post-sign">
         <h2>Step 4: Sign and Unblind</h2>
         <span class="paragraphed">
-          <p>Finally, we send the blinded message
+          <p>Finally, we send the blinded hash
           to our server for the signing and unblind the signature
           after receiving it.</p>
 
